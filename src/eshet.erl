@@ -32,11 +32,11 @@ path_unsplit(Parts) ->
 
 
 action_register(Srv, Path) ->
-    eshetsrv_state:register(Srv, action_owner, Path, self()).
+    eshetsrv_state_api:register(Srv, action_owner, Path, self()).
 
 
 action_call(Srv, Path, Args) ->
-    case eshetsrv_state:lookup(Srv, action_owner, Path) of
+    case eshetsrv_state_api:lookup(Srv, action_owner, Path) of
         {ok, Owner} ->
             try_gen_call(Owner, {action_call, Path, Args});
         {error, E} ->
@@ -45,11 +45,11 @@ action_call(Srv, Path, Args) ->
 
 
 prop_register(Srv, Path) ->
-    eshetsrv_state:register(Srv, prop_owner, Path, self()).
+    eshetsrv_state_api:register(Srv, prop_owner, Path, self()).
 
 
 set(Srv, Path, Value) ->
-    case eshetsrv_state:lookup(Srv, prop_state_owner, Path) of
+    case eshetsrv_state_api:lookup(Srv, prop_state_owner, Path) of
         {ok, prop, Owner} ->
             try_gen_call(Owner, {prop_set, Path, Value});
         {ok, state, none} ->
@@ -62,7 +62,7 @@ set(Srv, Path, Value) ->
 
 
 get(Srv, Path) ->
-    case eshetsrv_state:lookup(Srv, prop_state_owner, Path) of
+    case eshetsrv_state_api:lookup(Srv, prop_state_owner, Path) of
         {ok, prop, Owner} ->
             try_gen_call(Owner, {prop_get, Path});
         {ok, state, _Owner} ->
@@ -77,12 +77,12 @@ get(Srv, Path) ->
 
 
 event_register(Srv, Path) ->
-    eshetsrv_state:register(Srv, event_owner, Path, self()).
+    eshetsrv_state_api:register(Srv, event_owner, Path, self()).
 
 
 event_emit(Srv, Path, Args) ->
     % XXX: check owner?
-    case eshetsrv_state:lookup(Srv, event_listeners, Path) of
+    case eshetsrv_state_api:lookup(Srv, event_listeners, Path) of
         {ok, Listeners} ->
             [gen_server:cast(Listener, {event_notify, Path, Args})
              || Listener <- Listeners],
@@ -92,23 +92,23 @@ event_emit(Srv, Path, Args) ->
 
 
 event_listen(Srv, Path) ->
-    eshetsrv_state:register(Srv, event_listener, Path, self()).
+    eshetsrv_state_api:register(Srv, event_listener, Path, self()).
 
 
 state_register(Srv, Path) ->
-    eshetsrv_state:register(Srv, state_owner, Path, self()).
+    eshetsrv_state_api:register(Srv, state_owner, Path, self()).
 
 
 state_changed(Srv, Path, NewState) ->
-    eshetsrv_state:state_changed(Srv, Path, self(), {known, NewState}).
+    eshetsrv_state_api:state_changed(Srv, Path, self(), {known, NewState}).
 
 
 state_unknown(Srv, Path) ->
-    eshetsrv_state:state_changed(Srv, Path, self(), unknown).
+    eshetsrv_state_api:state_changed(Srv, Path, self(), unknown).
 
 
 state_observe(Srv, Path) ->
-    eshetsrv_state:register(Srv, state_observer, Path, self()).
+    eshetsrv_state_api:register(Srv, state_observer, Path, self()).
 
 
 % internal
