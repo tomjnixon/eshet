@@ -1,5 +1,7 @@
 -module(eshet).
 
+-export([link/1]).
+
 -export([path_valid/1, path_or_dir_valid/1]).
 -export([path_split/1, path_unsplit/1]).
 
@@ -8,6 +10,10 @@
 -export([event_register/2, event_emit/3, event_listen/2]).
 -export([state_register/2, state_changed/3, state_unknown/2, state_observe/2]).
 -export([set/3, get/2]).
+
+
+link(Srv) ->
+    eshetsrv_state_api:link(Srv, self()).
 
 
 path_valid(Path) ->
