@@ -24,5 +24,7 @@ format_json(X) when is_tuple(X) ->
 format_json(X) when is_map(X) ->
     maps:from_list([{format_json(Key), format_json(Value)}
                     || {Key, Value} <- maps:to_list(X)]);
+format_json(X) when is_pid(X) ->
+    erlang:list_to_binary(erlang:pid_to_list(X));
 format_json(X) ->
     X.
