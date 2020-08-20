@@ -17,6 +17,8 @@ format_json(X) when is_atom(X) ->
     erlang:atom_to_binary(X, utf8);
 format_json(X) when is_list(X) ->
     [format_json(Item) || Item <- X];
+format_json({bin, Bin}) when is_binary(Bin) ->
+    {bin, Bin};
 format_json(X) when is_tuple(X) ->
     format_json(erlang:tuple_to_list(X));
 format_json(X) when is_map(X) ->
