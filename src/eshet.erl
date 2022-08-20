@@ -8,7 +8,7 @@
 -export([action_register/2, action_call/3]).
 -export([prop_register/2]).
 -export([event_register/2, event_emit/3, event_listen/2]).
--export([state_register/2, state_changed/3, state_unknown/2, state_observe/2]).
+-export([state_register/2, state_changed/3, state_unknown/2, state_observe/2, state_observe_t/2]).
 -export([set/3, get/2]).
 
 link(Srv) ->
@@ -102,6 +102,13 @@ state_unknown(Srv, Path) ->
 
 state_observe(Srv, Path) ->
     eshetsrv_state_api:register(Srv, state_observer, Path, self()).
+
+state_observe_t(Srv, Path) ->
+    case eshetsrv_state_api:register(Srv, state_observer_t, Path, self()) of
+        % tuple format could be ambiguous with {known, V}
+        {ok, {S, T}} -> {ok, S, T};
+        Error -> Error
+    end.
 
 % internal
 
